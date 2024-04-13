@@ -3,42 +3,60 @@ import { useState } from "react";
 import SearchTask from "./SearchTask";
 import TaskActions from "./TaskActions";
 import TaskList from "./TaskList";
-import  AddTaskModal  from "./AddTaskModal";
-
+import AddTaskModal from "./AddTaskModal";
 
 export default function TaskBoard() {
-    const defaultTask= {
-        'id': crypto.randomUUID(),
-        'title': 'Learn React',
-        "description": "Learn React from the official documentation.",
-        "tags": ["web", "react","js"],
-        "priority": "High",
-        "isFavorite": true,
-    }
-    const [tasks, setTasks] = useState([defaultTask]);
-    const [showAddModal, setShowAddModal] = useState(false);
+  const defaultTask = {
+    id: crypto.randomUUID(),
+    title: "Learn React",
+    description: "Learn React from the official documentation.",
+    tags: ["web", "react", "js"],
+    priority: "High",
+    isFavorite: true,
+  };
+  const [tasks, setTasks] = useState([defaultTask]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [taskToUpdate, setTaskToUpdate] = useState(null);
 
-    function handleAddTask(newTask) {
-      console.log("Adding a task...",newTask);
+  function handleAddEditTask(newTask,isAdd) {
+    console.log("Adding a task...", newTask);
+    if(isAdd){
       setTasks([...tasks, newTask]);
-      setShowAddModal(false);
     }
+    else{
+      setTasks(
+        tasks.map((task)=> task.id === newTask.id ? newTask : task)
+      );
+    }
+    setShowAddModal(false);
+  }
 
-    function handleEditTask(task) {
-      
-    }
+  function handleEditTask(task) {
+    setTaskToUpdate(task);
+    setShowAddModal(true);
+  }
+
+  function handleCloseClick() {
+    setShowAddModal(false);
+    setTaskToUpdate(null);
+  }
+
+  function handleDeleteTask(taskId){
+    const tasksAfterDelete = tasks.filter((task) => task.id !== taskId);
+    setTasks(tasksAfterDelete);
+  }
 
   return (
     <section className="mb-20" id="tasks">
-      { showAddModal && <AddTaskModal onSave={handleAddTask}/>}
+      {showAddModal && <AddTaskModal onSave={handleAddEditTask} onCloseClick={handleCloseClick} taskToUpdate={taskToUpdate} />}
       <div className="container">
         <div className="p-2 flex justify-end">
           <SearchTask />
         </div>
 
         <div className="rounded-xl border border-[rgba(206,206,206,0.12)] bg-[#1D212B] px-6 py-8 md:px-9 md:py-16">
-          <TaskActions onAddClick={()=>setShowAddModal(true)}/>
-          <TaskList tasks={tasks} onEdit={handleEditTask}/>
+          <TaskActions onAddClick={() => setShowAddModal(true)} />
+          <TaskList tasks={tasks} onEdit={handleEditTask} onDelete={handleDeleteTask} />
         </div>
       </div>
     </section>
