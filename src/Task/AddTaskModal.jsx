@@ -11,6 +11,7 @@ export default function AddTaskModal({onSave,taskToUpdate,onCloseClick}) {
     isFavorite: false,
   });
 
+  // eslint-disable-next-line no-unused-vars
   const [isAdd, setIsAdd] = useState(Object.is(taskToUpdate, null));
 
   const handlChange = (event) => {
